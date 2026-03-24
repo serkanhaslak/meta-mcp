@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "meta-mcp": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://your-deployment-url.up.railway.app/mcp",
+        "--header",
+        "Authorization: Bearer YOUR_MCP_API_KEY"
+      ]
+    }
+  }
+}

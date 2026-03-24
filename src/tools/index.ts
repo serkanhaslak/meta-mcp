@@ -1,0 +1,54 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { MetaApiClient } from '../client.js';
+
+import { registerAccountTools } from './account.js';
+import { registerCampaignTools } from './campaigns.js';
+import { registerAdsetTools } from './adsets.js';
+import { registerAdTools } from './ads.js';
+import { registerCreativeTools } from './creatives.js';
+import { registerImageTools } from './images.js';
+import { registerVideoTools } from './videos.js';
+import { registerAudienceTools } from './audiences.js';
+import { registerInsightsTools } from './insights.js';
+import { registerTargetingTools } from './targeting.js';
+import { registerLeadgenTools } from './leadgen.js';
+import { registerConversionTools } from './conversions.js';
+import { registerBatchTools } from './batch.js';
+import { registerPixelTools } from './pixel.js';
+import { registerPreviewTools } from './previews.js';
+import { registerActivityTools } from './activities.js';
+import { registerSavedAudienceTools } from './saved-audiences.js';
+import { registerCopyTools } from './copies.js';
+import { registerBudgetScheduleTools } from './budget-schedules.js';
+import { registerTargetingUtilTools } from './targeting-utils.js';
+import { registerCustomConversionTools } from './custom-conversions.js';
+import { registerReachEstimateTools } from './reach-estimate.js';
+import { registerRuleTools } from './rules.js';
+import { registerLabelTools } from './labels.js';
+
+export function registerAllTools(server: McpServer, client: MetaApiClient): void {
+  registerAccountTools(server, client);
+  registerCampaignTools(server, client);
+  registerAdsetTools(server, client);
+  registerAdTools(server, client);
+  registerCreativeTools(server, client);
+  registerImageTools(server, client);
+  registerVideoTools(server, client);
+  registerAudienceTools(server, client);
+  registerInsightsTools(server, client);
+  registerTargetingTools(server, client);
+  registerLeadgenTools(server, client);
+  registerConversionTools(server, client);
+  registerBatchTools(server, client);
+  registerPixelTools(server, client);
+  registerPreviewTools(server, client);
+  registerActivityTools(server, client);
+  registerSavedAudienceTools(server, client);
+  registerCopyTools(server, client);
+  registerBudgetScheduleTools(server, client);
+  registerTargetingUtilTools(server, client);
+  registerCustomConversionTools(server, client);
+  registerReachEstimateTools(server, client);
+  registerRuleTools(server, client);
+  registerLabelTools(server, client);
+}
