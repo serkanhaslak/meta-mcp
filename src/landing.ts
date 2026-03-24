@@ -1,5 +1,11 @@
 const BASE_URL = 'https://meta-mcp.pragmaticgrowth.com';
 
+// Pragmatic Growth logo SVG (white fill for dark backgrounds)
+const PG_LOGO_WHITE = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="24" fill="none"><path fill="#ffffff" fill-rule="evenodd" d="M0 12C0 5.373 5.285 0 11.805 0h20.39C38.715 0 44 5.373 44 12s-5.285 12-11.805 12h-20.39C5.285 24 0 18.627 0 12zm20.39 0a8.83 8.83 0 0 0-1.447-4.849 8.618 8.618 0 0 0-3.853-3.214 8.456 8.456 0 0 0-4.96-.497 8.543 8.543 0 0 0-4.396 2.39 8.773 8.773 0 0 0-2.35 4.468 8.861 8.861 0 0 0 .489 5.043 8.698 8.698 0 0 0 3.162 3.916 8.487 8.487 0 0 0 4.77 1.471V12h8.585zm18.944 4.849A8.83 8.83 0 0 0 40.78 12h-8.586V3.273a8.487 8.487 0 0 0-4.77 1.47 8.698 8.698 0 0 0-3.162 3.917 8.862 8.862 0 0 0-.488 5.043 8.774 8.774 0 0 0 2.35 4.468 8.544 8.544 0 0 0 4.395 2.389 8.457 8.457 0 0 0 4.96-.497 8.618 8.618 0 0 0 3.854-3.214z" clip-rule="evenodd"/></svg>`;
+
+// Favicon: same logo, encoded for data URI
+const FAVICON_SVG = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="24" fill="none"><path fill="%23020617" fill-rule="evenodd" d="M0 12C0 5.373 5.285 0 11.805 0h20.39C38.715 0 44 5.373 44 12s-5.285 12-11.805 12h-20.39C5.285 24 0 18.627 0 12zm20.39 0a8.83 8.83 0 0 0-1.447-4.849 8.618 8.618 0 0 0-3.853-3.214 8.456 8.456 0 0 0-4.96-.497 8.543 8.543 0 0 0-4.396 2.39 8.773 8.773 0 0 0-2.35 4.468 8.861 8.861 0 0 0 .489 5.043 8.698 8.698 0 0 0 3.162 3.916 8.487 8.487 0 0 0 4.77 1.471V12h8.585zm18.944 4.849A8.83 8.83 0 0 0 40.78 12h-8.586V3.273a8.487 8.487 0 0 0-4.77 1.47 8.698 8.698 0 0 0-3.162 3.917 8.862 8.862 0 0 0-.488 5.043 8.774 8.774 0 0 0 2.35 4.468 8.544 8.544 0 0 0 4.395 2.389 8.457 8.457 0 0 0 4.96-.497 8.618 8.618 0 0 0 3.854-3.214z" clip-rule="evenodd"/></svg>')}`;
+
 export function renderLandingPage(uptimeSec: number): string {
   const d = Math.floor(uptimeSec / 86400);
   const h = Math.floor((uptimeSec % 86400) / 3600);
@@ -15,8 +21,9 @@ export function renderLandingPage(uptimeSec: number): string {
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>meta-mcp &mdash; Meta Ads MCP Server</title>
+<title>Meta Ads MCP &mdash; by Pragmatic Growth</title>
 <meta name="description" content="77 MCP tools for full Meta (Facebook & Instagram) Ads campaign lifecycle management"/>
+<link rel="icon" type="image/svg+xml" href="${FAVICON_SVG}"/>
 <style>
 :root {
   --bg: #09090b;
@@ -71,13 +78,21 @@ body {
 
 /* ── Header ── */
 .header { text-align: center; margin-bottom: 2.5rem; }
-.logo {
-  font-size: 2.5rem;
+.header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.header-logo svg { width: 52px; height: 28px; flex-shrink: 0; }
+.header-title {
+  font-size: 2.4rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  margin-bottom: 0.35rem;
+  color: var(--text);
 }
-.logo span { color: var(--blue); }
+.header-title span { color: var(--blue); }
 .tagline { color: var(--text-muted); font-size: 1rem; line-height: 1.5; max-width: 480px; margin: 0 auto; }
 
 /* ── Status ── */
@@ -263,13 +278,25 @@ pre .comment { color: #52525b; }
   font-size: 0.75rem;
   color: var(--text-dim);
 }
-.footer a { color: var(--blue); text-decoration: none; }
-.footer a:hover { text-decoration: underline; }
+.footer a { color: var(--text-muted); text-decoration: none; transition: color 0.15s; }
+.footer a:hover { color: var(--text); text-decoration: underline; }
+.footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.footer-brand svg { width: 28px; height: 15px; opacity: 0.5; transition: opacity 0.15s; }
+.footer-brand:hover svg { opacity: 0.8; }
+.footer-links { margin-top: 0.35rem; }
+.footer-links a { color: var(--blue); }
 
 /* ── Mobile ── */
 @media (max-width: 560px) {
   .page { padding: 2rem 1rem; }
-  .logo { font-size: 2rem; }
+  .header-title { font-size: 1.8rem; }
+  .header-logo svg { width: 40px; height: 22px; }
   .stats { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
   .stat-card { padding: 1rem 0.5rem; }
   .stat-num { font-size: 1.5rem; }
@@ -285,7 +312,10 @@ pre .comment { color: #52525b; }
 <div class="container">
 
   <div class="header">
-    <div class="logo"><span>meta</span>-mcp</div>
+    <div class="header-logo">
+      ${PG_LOGO_WHITE}
+      <div class="header-title"><span>Meta Ads</span> MCP</div>
+    </div>
     <p class="tagline">77 MCP tools for complete Meta Ads campaign lifecycle management.<br/>Built for Claude Code, REST clients, and the Meta Graph API.</p>
   </div>
 
@@ -312,6 +342,10 @@ pre .comment { color: #52525b; }
     <a href="/docs/json" class="btn btn-ghost">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       OpenAPI Spec
+    </a>
+    <a href="https://github.com/serkanhaslak/meta-mcp" class="btn btn-ghost" target="_blank">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
     </a>
   </div>
 
@@ -383,7 +417,13 @@ pre .comment { color: #52525b; }
   </div>
 
   <div class="footer">
-    meta-mcp v1.0.0 &middot; <a href="/docs">API Docs</a> &middot; <a href="/docs/json">OpenAPI Spec</a>
+    <a href="https://pragmaticgrowth.com" target="_blank" class="footer-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="15" fill="none" viewBox="0 0 44 24"><path fill="currentColor" fill-rule="evenodd" d="M0 12C0 5.373 5.285 0 11.805 0h20.39C38.715 0 44 5.373 44 12s-5.285 12-11.805 12h-20.39C5.285 24 0 18.627 0 12zm20.39 0a8.83 8.83 0 0 0-1.447-4.849 8.618 8.618 0 0 0-3.853-3.214 8.456 8.456 0 0 0-4.96-.497 8.543 8.543 0 0 0-4.396 2.39 8.773 8.773 0 0 0-2.35 4.468 8.861 8.861 0 0 0 .489 5.043 8.698 8.698 0 0 0 3.162 3.916 8.487 8.487 0 0 0 4.77 1.471V12h8.585zm18.944 4.849A8.83 8.83 0 0 0 40.78 12h-8.586V3.273a8.487 8.487 0 0 0-4.77 1.47 8.698 8.698 0 0 0-3.162 3.917 8.862 8.862 0 0 0-.488 5.043 8.774 8.774 0 0 0 2.35 4.468 8.544 8.544 0 0 0 4.395 2.389 8.457 8.457 0 0 0 4.96-.497 8.618 8.618 0 0 0 3.854-3.214z" clip-rule="evenodd"/></svg>
+      Built by Pragmatic Growth
+    </a>
+    <div class="footer-links">
+      <a href="/docs">API Docs</a> &nbsp;&middot;&nbsp; <a href="/docs/json">OpenAPI Spec</a> &nbsp;&middot;&nbsp; <a href="https://github.com/serkanhaslak/meta-mcp" target="_blank">GitHub</a>
+    </div>
   </div>
 
 </div>
