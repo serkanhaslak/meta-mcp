@@ -3,8 +3,8 @@ const BASE_URL = 'https://meta-mcp.pragmaticgrowth.com';
 // Pragmatic Growth logo SVG (white fill for dark backgrounds)
 const PG_LOGO_WHITE = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="24" fill="none"><path fill="#ffffff" fill-rule="evenodd" d="M0 12C0 5.373 5.285 0 11.805 0h20.39C38.715 0 44 5.373 44 12s-5.285 12-11.805 12h-20.39C5.285 24 0 18.627 0 12zm20.39 0a8.83 8.83 0 0 0-1.447-4.849 8.618 8.618 0 0 0-3.853-3.214 8.456 8.456 0 0 0-4.96-.497 8.543 8.543 0 0 0-4.396 2.39 8.773 8.773 0 0 0-2.35 4.468 8.861 8.861 0 0 0 .489 5.043 8.698 8.698 0 0 0 3.162 3.916 8.487 8.487 0 0 0 4.77 1.471V12h8.585zm18.944 4.849A8.83 8.83 0 0 0 40.78 12h-8.586V3.273a8.487 8.487 0 0 0-4.77 1.47 8.698 8.698 0 0 0-3.162 3.917 8.862 8.862 0 0 0-.488 5.043 8.774 8.774 0 0 0 2.35 4.468 8.544 8.544 0 0 0 4.395 2.389 8.457 8.457 0 0 0 4.96-.497 8.618 8.618 0 0 0 3.854-3.214z" clip-rule="evenodd"/></svg>`;
 
-// Favicon: same logo, encoded for data URI
-const FAVICON_SVG = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="24" fill="none"><path fill="%23020617" fill-rule="evenodd" d="M0 12C0 5.373 5.285 0 11.805 0h20.39C38.715 0 44 5.373 44 12s-5.285 12-11.805 12h-20.39C5.285 24 0 18.627 0 12zm20.39 0a8.83 8.83 0 0 0-1.447-4.849 8.618 8.618 0 0 0-3.853-3.214 8.456 8.456 0 0 0-4.96-.497 8.543 8.543 0 0 0-4.396 2.39 8.773 8.773 0 0 0-2.35 4.468 8.861 8.861 0 0 0 .489 5.043 8.698 8.698 0 0 0 3.162 3.916 8.487 8.487 0 0 0 4.77 1.471V12h8.585zm18.944 4.849A8.83 8.83 0 0 0 40.78 12h-8.586V3.273a8.487 8.487 0 0 0-4.77 1.47 8.698 8.698 0 0 0-3.162 3.917 8.862 8.862 0 0 0-.488 5.043 8.774 8.774 0 0 0 2.35 4.468 8.544 8.544 0 0 0 4.395 2.389 8.457 8.457 0 0 0 4.96-.497 8.618 8.618 0 0 0 3.854-3.214z" clip-rule="evenodd"/></svg>')}`;
+// Favicon SVG (served at /favicon.svg route)
+export const FAVICON_SVG_CONTENT = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 24" width="44" height="24" fill="none"><path fill="#020617" fill-rule="evenodd" d="M0 12C0 5.373 5.285 0 11.805 0h20.39C38.715 0 44 5.373 44 12s-5.285 12-11.805 12h-20.39C5.285 24 0 18.627 0 12zm20.39 0a8.83 8.83 0 0 0-1.447-4.849 8.618 8.618 0 0 0-3.853-3.214 8.456 8.456 0 0 0-4.96-.497 8.543 8.543 0 0 0-4.396 2.39 8.773 8.773 0 0 0-2.35 4.468 8.861 8.861 0 0 0 .489 5.043 8.698 8.698 0 0 0 3.162 3.916 8.487 8.487 0 0 0 4.77 1.471V12h8.585zm18.944 4.849A8.83 8.83 0 0 0 40.78 12h-8.586V3.273a8.487 8.487 0 0 0-4.77 1.47 8.698 8.698 0 0 0-3.162 3.917 8.862 8.862 0 0 0-.488 5.043 8.774 8.774 0 0 0 2.35 4.468 8.544 8.544 0 0 0 4.395 2.389 8.457 8.457 0 0 0 4.96-.497 8.618 8.618 0 0 0 3.854-3.214z" clip-rule="evenodd"/></svg>';
 
 export function renderLandingPage(uptimeSec: number): string {
   const d = Math.floor(uptimeSec / 86400);
@@ -23,7 +23,7 @@ export function renderLandingPage(uptimeSec: number): string {
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Meta Ads MCP &mdash; by Pragmatic Growth</title>
 <meta name="description" content="77 MCP tools for full Meta (Facebook & Instagram) Ads campaign lifecycle management"/>
-<link rel="icon" type="image/svg+xml" href="${FAVICON_SVG}"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <style>
 :root {
   --bg: #09090b;

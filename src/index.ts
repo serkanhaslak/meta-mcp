@@ -14,7 +14,7 @@ import { MetaApiClient } from './client.js';
 import { registerAllTools } from './tools/index.js';
 import { registerRestRoutes } from './rest/proxy.js';
 import { HealthResponseSchema } from './rest/schemas.js';
-import { renderLandingPage } from './landing.js';
+import { renderLandingPage, FAVICON_SVG_CONTENT } from './landing.js';
 import { swaggerDarkCss } from './swagger-theme.js';
 
 const token = process.env.META_ACCESS_TOKEN;
@@ -127,7 +127,7 @@ async function main() {
   // ═══════════════════════════════════════════════════════════════════════
   fastify.addHook('onRequest', async (request, reply) => {
     // Skip auth for public pages
-    if (request.url === '/' || request.url === '/health' || request.url.startsWith('/docs')) return;
+    if (request.url === '/' || request.url === '/health' || request.url === '/favicon.svg' || request.url.startsWith('/docs')) return;
 
     if (!API_KEY) return; // No key configured — allow all
 
@@ -146,6 +146,10 @@ async function main() {
   // ═══════════════════════════════════════════════════════════════════════
   fastify.get('/', { schema: { hide: true } }, async (_request, reply) => {
     reply.type('text/html').send(renderLandingPage(process.uptime()));
+  });
+
+  fastify.get('/favicon.svg', { schema: { hide: true } }, async (_request, reply) => {
+    reply.type('image/svg+xml').header('cache-control', 'public, max-age=86400').send(FAVICON_SVG_CONTENT);
   });
 
   // ═══════════════════════════════════════════════════════════════════════
