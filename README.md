@@ -357,7 +357,14 @@ The server starts at `https://meta-mcp.pragmaticgrowth.com` (or `http://localhos
 
 Connect Claude Code directly to the remote endpoint.
 
-Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for global access):
+1. Add your server URL and API key to `.env` (gitignored, never committed):
+
+```bash
+META_MCP_URL=https://your-deployment-url.up.railway.app/mcp
+MCP_API_KEY=your_api_key_here
+```
+
+2. Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for global access):
 
 ```json
 {
@@ -366,12 +373,16 @@ Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for gl
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://meta-mcp.pragmaticgrowth.com/mcp"
+        "${META_MCP_URL}",
+        "--header",
+        "Authorization: Bearer ${MCP_API_KEY}"
       ]
     }
   }
 }
 ```
+
+The `${META_MCP_URL}` and `${MCP_API_KEY}` are resolved from your `.env` file — no secrets in `.mcp.json`.
 
 ### Option 2: Local Server (stdio)
 
@@ -455,12 +466,16 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://meta-mcp.pragmaticgrowth.com/mcp"
+        "https://your-deployment-url.up.railway.app/mcp",
+        "--header",
+        "Authorization: Bearer YOUR_MCP_API_KEY"
       ]
     }
   }
 }
 ```
+
+> **Note:** Claude Desktop doesn't support `${ENV_VAR}` syntax, so you must paste the actual values.
 
 ### Verifying the Connection
 

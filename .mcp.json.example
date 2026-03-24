@@ -4,7 +4,9 @@
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://meta-mcp.pragmaticgrowth.com/mcp"
+        "${META_MCP_URL}",
+        "--header",
+        "Authorization: Bearer ${MCP_API_KEY}"
       ]
     }
   }
