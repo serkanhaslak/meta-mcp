@@ -557,17 +557,18 @@ The server also exposes a REST API for non-MCP clients (n8n, Postman, curl, cust
 
 ### Authentication
 
-All REST requests require the `X-Meta-Token` header with your Meta access token:
+All `/mcp` and `/api/*` requests require two headers:
+
+| Header | Purpose |
+|--------|---------|
+| `Authorization: Bearer <MCP_API_KEY>` | Server API key — gates access to all endpoints |
+| `X-Meta-Token: <META_ACCESS_TOKEN>` | Meta access token — authenticates with Meta Graph API |
 
 ```bash
-curl -H "X-Meta-Token: YOUR_META_TOKEN" \
+curl -H "Authorization: Bearer YOUR_MCP_API_KEY" \
+     -H "X-Meta-Token: YOUR_META_TOKEN" \
      -H "X-Meta-Account-Id: act_123456789" \
      https://meta-mcp.pragmaticgrowth.com/api/v1/campaigns
-```
-
-If `MCP_API_KEY` is set on the server, you also need:
-```bash
--H "Authorization: Bearer YOUR_MCP_API_KEY"
 ```
 
 ### Convenience Endpoints
@@ -594,11 +595,13 @@ Access any Meta Graph API endpoint directly:
 
 ```bash
 # Get user's ad accounts
-curl -H "X-Meta-Token: TOKEN" \
-     https://meta-mcp.pragmaticgrowth.com/api/v1/meta/me/adaccounts?fields=id,name&limit=5
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "X-Meta-Token: YOUR_META_TOKEN" \
+     "https://meta-mcp.pragmaticgrowth.com/api/v1/meta/me/adaccounts?fields=id,name&limit=5"
 
 # Get campaign insights
-curl -H "X-Meta-Token: TOKEN" \
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "X-Meta-Token: YOUR_META_TOKEN" \
      "https://meta-mcp.pragmaticgrowth.com/api/v1/meta/act_123/insights?fields=spend,impressions&date_preset=last_7d"
 ```
 
@@ -669,8 +672,11 @@ meta-mcp/
 │   │   ├── budget-schedules.ts # Budget scheduling
 │   │   ├── activities.ts     # Audit activity logs
 │   │   └── reach-estimate.ts # Reach/frequency estimation
+│   ├── landing.ts            # Landing page HTML (served at /)
+│   ├── swagger-theme.ts      # Dark theme CSS for Swagger UI
 │   ├── rest/
-│   │   └── proxy.ts          # REST API routes and Graph API proxy
+│   │   ├── proxy.ts          # REST API routes and Graph API proxy
+│   │   └── schemas.ts        # Zod schemas for OpenAPI documentation
 │   └── utils/
 │       ├── default-fields.ts # Pre-configured API field selections
 │       ├── rate-limiter.ts   # BUC-based adaptive rate limiting
@@ -754,8 +760,9 @@ node dist/index.js
 | `META_ACCESS_TOKEN` | Yes | — | Meta API System User or long-lived user token |
 | `META_AD_ACCOUNT_ID` | No | — | Default ad account ID (e.g., `act_123456789`). If not set, must be passed per tool call |
 | `META_API_VERSION` | No | `v28.0` | Meta Graph API version override |
-| `MCP_API_KEY` | No | — | API key for authenticating HTTP requests. If not set, auth is disabled |
+| `MCP_API_KEY` | Recommended | — | API key for authenticating all `/mcp` and `/api/*` requests. If not set, endpoints are open |
 | `PORT` | No | `3000` | Server listening port |
+| `META_MCP_URL` | No | — | Server URL for `.mcp.json` env var interpolation (e.g., `https://your-app.up.railway.app/mcp`) |
 
 ---
 

@@ -14,6 +14,8 @@ import { MetaApiClient } from './client.js';
 import { registerAllTools } from './tools/index.js';
 import { registerRestRoutes } from './rest/proxy.js';
 import { HealthResponseSchema } from './rest/schemas.js';
+import { renderLandingPage } from './landing.js';
+import { swaggerDarkCss } from './swagger-theme.js';
 
 const token = process.env.META_ACCESS_TOKEN;
 if (!token) {
@@ -83,7 +85,7 @@ async function main() {
           bearerAuth: {
             type: 'http',
             scheme: 'bearer',
-            description: 'MCP API Key (optional, if MCP_API_KEY env var is set)',
+            description: 'MCP API Key — required for all /mcp and /api/* endpoints. Set via MCP_API_KEY env var on the server.',
           },
           metaToken: {
             type: 'apiKey',
@@ -114,6 +116,10 @@ async function main() {
 
   await fastify.register(fastifySwaggerUi, {
     routePrefix: '/docs',
+    theme: {
+      title: 'meta-mcp API',
+      css: [{ filename: 'dark-theme.css', content: swaggerDarkCss }],
+    },
   });
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -139,124 +145,7 @@ async function main() {
   //  LANDING PAGE
   // ═══════════════════════════════════════════════════════════════════════
   fastify.get('/', { schema: { hide: true } }, async (_request, reply) => {
-    const uptime = process.uptime();
-    const h = Math.floor(uptime / 3600);
-    const m = Math.floor((uptime % 3600) / 60);
-    const uptimeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-
-    reply.type('text/html').send(/* html */ `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>meta-mcp</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0a0a0a;color:#e5e5e5;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem}
-  .container{max-width:720px;width:100%}
-  h1{font-size:2rem;font-weight:700;margin-bottom:.25rem}
-  h1 span{color:#1877f2}
-  .tagline{color:#888;font-size:.95rem;margin-bottom:2rem}
-  .status-card{background:#141414;border:1px solid #262626;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
-  .dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e80;flex-shrink:0}
-  .status-info{flex:1}
-  .status-label{font-size:.8rem;color:#888;text-transform:uppercase;letter-spacing:.05em}
-  .status-value{font-size:1.1rem;font-weight:600}
-  .stats{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
-  .stat{background:#141414;border:1px solid #262626;border-radius:10px;padding:.85rem 1rem;flex:1;min-width:100px;text-align:center}
-  .stat-num{font-size:1.5rem;font-weight:700;color:#1877f2}
-  .stat-label{font-size:.75rem;color:#888;margin-top:.15rem}
-  h2{font-size:1.15rem;font-weight:600;margin:1.75rem 0 .75rem;color:#ccc}
-  .card{background:#141414;border:1px solid #262626;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem}
-  .card h3{font-size:.95rem;font-weight:600;margin-bottom:.5rem}
-  .card p{font-size:.85rem;color:#999;line-height:1.5;margin-bottom:.75rem}
-  pre{background:#0d0d0d;border:1px solid #262626;border-radius:8px;padding:1rem;font-size:.8rem;overflow-x:auto;line-height:1.6;color:#d4d4d4;margin-bottom:.5rem}
-  code{font-family:"SF Mono",Menlo,Consolas,monospace}
-  .link-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem}
-  .link-row a{display:inline-flex;align-items:center;gap:.4rem;background:#1877f2;color:#fff;text-decoration:none;font-size:.85rem;font-weight:500;padding:.55rem 1rem;border-radius:8px;transition:background .15s}
-  .link-row a:hover{background:#1565c0}
-  .link-row a.secondary{background:transparent;border:1px solid #333;color:#ccc}
-  .link-row a.secondary:hover{border-color:#1877f2;color:#fff}
-  .footer{margin-top:2rem;text-align:center;font-size:.75rem;color:#555}
-  .footer a{color:#1877f2;text-decoration:none}
-</style>
-</head>
-<body>
-<div class="container">
-  <h1><span>meta</span>-mcp</h1>
-  <p class="tagline">Meta Ads MCP Server &mdash; 77 tools for full campaign lifecycle management</p>
-
-  <div class="status-card">
-    <div class="dot"></div>
-    <div class="status-info">
-      <div class="status-label">Server Status</div>
-      <div class="status-value">Operational &middot; uptime ${uptimeStr}</div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><div class="stat-num">77</div><div class="stat-label">MCP Tools</div></div>
-    <div class="stat"><div class="stat-num">24</div><div class="stat-label">Modules</div></div>
-    <div class="stat"><div class="stat-num">2</div><div class="stat-label">Modes</div></div>
-  </div>
-
-  <div class="link-row">
-    <a href="/docs">API Documentation</a>
-    <a href="/health" class="secondary">Health JSON</a>
-  </div>
-
-  <h2>Quick Start</h2>
-
-  <div class="card">
-    <h3>1. Connect with Claude Code</h3>
-    <p>Add to <code>.mcp.json</code> in your project root or <code>~/.claude/.mcp.json</code> for global access:</p>
-    <pre><code>{
-  "mcpServers": {
-    "meta-mcp": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "https://meta-mcp.pragmaticgrowth.com/mcp"
-      ]
-    }
-  }
-}</code></pre>
-  </div>
-
-  <div class="card">
-    <h3>2. REST API</h3>
-    <p>Use the REST endpoints directly with any HTTP client. Requires <code>X-Meta-Token</code> header.</p>
-    <pre><code>curl -H "X-Meta-Token: YOUR_TOKEN" \\
-     https://meta-mcp.pragmaticgrowth.com/api/v1/campaigns</code></pre>
-  </div>
-
-  <div class="card">
-    <h3>3. Graph API Proxy</h3>
-    <p>Access any Meta Graph API endpoint through the proxy:</p>
-    <pre><code>curl -H "X-Meta-Token: YOUR_TOKEN" \\
-     https://meta-mcp.pragmaticgrowth.com/api/v1/meta/me/adaccounts?fields=id,name</code></pre>
-  </div>
-
-  <h2>Available Endpoints</h2>
-  <div class="card">
-    <pre><code>MCP Protocol   POST /mcp            Claude &amp; MCP clients
-REST API       /api/v1/campaigns    campaigns CRUD
-               /api/v1/adsets       ad sets CRUD
-               /api/v1/ads          ads CRUD
-               /api/v1/creatives    creative management
-               /api/v1/audiences    audience management
-               /api/v1/insights/:id performance metrics
-               /api/v1/images       image library
-               /api/v1/pixels       pixel management
-               /api/v1/conversions  conversions API
-Graph Proxy    /api/v1/meta/*       any Graph API path
-Docs           /docs                Swagger UI</code></pre>
-  </div>
-
-  <div class="footer">meta-mcp v1.0.0 &middot; Powered by Fastify &middot; <a href="/docs">Full API Docs</a></div>
-</div>
-</body>
-</html>`);
+    reply.type('text/html').send(renderLandingPage(process.uptime()));
   });
 
   // ═══════════════════════════════════════════════════════════════════════
