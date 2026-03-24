@@ -365,18 +365,14 @@ Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for gl
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://your-deployment-url.up.railway.app/mcp",
-        "--header",
-        "Authorization: Bearer YOUR_MCP_API_KEY"
+        "https://your-deployment-url.up.railway.app/mcp"
       ]
     }
   }
 }
 ```
 
-Replace:
-- `your-deployment-url.up.railway.app` with your actual deployment URL
-- `YOUR_MCP_API_KEY` with your API key (if `MCP_API_KEY` is set on the server)
+Replace `your-deployment-url.up.railway.app` with your actual deployment URL.
 
 ### Option 2: Local Server (stdio)
 
@@ -460,9 +456,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://your-deployment-url.up.railway.app/mcp",
-        "--header",
-        "Authorization: Bearer YOUR_MCP_API_KEY"
+        "https://your-deployment-url.up.railway.app/mcp"
       ]
     }
   }
