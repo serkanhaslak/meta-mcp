@@ -4,7 +4,7 @@
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://your-deployment-url.up.railway.app/mcp"
+        "https://meta-mcp.pragmaticgrowth.com/mcp"
       ]
     }
   }

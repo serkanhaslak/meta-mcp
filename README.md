@@ -343,10 +343,11 @@ docker run -p 3000:3000 \
   meta-mcp
 ```
 
-The server starts at `http://localhost:3000` with:
-- MCP endpoint: `http://localhost:3000/mcp`
-- REST API: `http://localhost:3000/api/v1/*`
-- Health check: `http://localhost:3000/health`
+The server starts at `https://meta-mcp.pragmaticgrowth.com` (or `http://localhost:3000` locally) with:
+- MCP endpoint: `https://meta-mcp.pragmaticgrowth.com/mcp`
+- REST API: `https://meta-mcp.pragmaticgrowth.com/api/v1/*`
+- Health check: `https://meta-mcp.pragmaticgrowth.com/health`
+- API docs: `https://meta-mcp.pragmaticgrowth.com/docs`
 
 ---
 
@@ -354,7 +355,7 @@ The server starts at `http://localhost:3000` with:
 
 ### Option 1: Remote Server (Recommended)
 
-If you have the server deployed (e.g., on Railway), connect Claude Code directly to the remote endpoint.
+Connect Claude Code directly to the remote endpoint.
 
 Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for global access):
 
@@ -365,14 +366,12 @@ Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for gl
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://your-deployment-url.up.railway.app/mcp"
+        "https://meta-mcp.pragmaticgrowth.com/mcp"
       ]
     }
   }
 }
 ```
-
-Replace `your-deployment-url.up.railway.app` with your actual deployment URL.
 
 ### Option 2: Local Server (stdio)
 
@@ -456,7 +455,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
       "command": "npx",
       "args": [
         "mcp-remote",
-        "https://your-deployment-url.up.railway.app/mcp"
+        "https://meta-mcp.pragmaticgrowth.com/mcp"
       ]
     }
   }
@@ -548,7 +547,7 @@ All REST requests require the `X-Meta-Token` header with your Meta access token:
 ```bash
 curl -H "X-Meta-Token: YOUR_META_TOKEN" \
      -H "X-Meta-Account-Id: act_123456789" \
-     http://localhost:3000/api/v1/campaigns
+     https://meta-mcp.pragmaticgrowth.com/api/v1/campaigns
 ```
 
 If `MCP_API_KEY` is set on the server, you also need:
@@ -581,17 +580,17 @@ Access any Meta Graph API endpoint directly:
 ```bash
 # Get user's ad accounts
 curl -H "X-Meta-Token: TOKEN" \
-     http://localhost:3000/api/v1/meta/me/adaccounts?fields=id,name&limit=5
+     https://meta-mcp.pragmaticgrowth.com/api/v1/meta/me/adaccounts?fields=id,name&limit=5
 
 # Get campaign insights
 curl -H "X-Meta-Token: TOKEN" \
-     "http://localhost:3000/api/v1/meta/act_123/insights?fields=spend,impressions&date_preset=last_7d"
+     "https://meta-mcp.pragmaticgrowth.com/api/v1/meta/act_123/insights?fields=spend,impressions&date_preset=last_7d"
 ```
 
 ### Health Check
 
 ```bash
-curl http://localhost:3000/health
+curl https://meta-mcp.pragmaticgrowth.com/health
 ```
 
 Returns:
