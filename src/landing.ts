@@ -359,7 +359,8 @@ pre .comment { color: #52525b; }
     <p>Add secrets to <code>.env</code> (gitignored), then reference them in <code>.mcp.json</code>:</p>
     <pre><code><span class="comment"># .env</span>
 <span class="kw">META_MCP_URL</span>=<span class="str">${BASE_URL}/mcp</span>
-<span class="kw">MCP_API_KEY</span>=<span class="str">your_api_key</span></code></pre>
+<span class="kw">MCP_API_KEY</span>=<span class="str">your_api_key</span>
+<span class="kw">META_ACCESS_TOKEN</span>=<span class="str">your_meta_token</span></code></pre>
     <pre><code><span class="comment">// .mcp.json</span>
 {
   <span class="str">"mcpServers"</span>: {
@@ -369,12 +370,14 @@ pre .comment { color: #52525b; }
         <span class="str">"mcp-remote"</span>,
         <span class="str">"\${META_MCP_URL}"</span>,
         <span class="str">"--header"</span>,
-        <span class="str">"Authorization: Bearer \${MCP_API_KEY}"</span>
+        <span class="str">"Authorization: Bearer \${MCP_API_KEY}"</span>,
+        <span class="str">"--header"</span>,
+        <span class="str">"X-Meta-Token: \${META_ACCESS_TOKEN}"</span>
       ]
     }
   }
 }</code></pre>
-    <p>Environment variables are resolved automatically &mdash; no secrets in <code>.mcp.json</code>.</p>
+    <p>Both MCP and REST use the same auth model: <code>Authorization</code> for the server API key, <code>X-Meta-Token</code> for your Meta access token. Environment variables are resolved automatically &mdash; no secrets in <code>.mcp.json</code>.</p>
   </div>
 
   <div class="card">

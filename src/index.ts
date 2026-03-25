@@ -17,20 +17,10 @@ import { HealthResponseSchema } from './rest/schemas.js';
 import { renderLandingPage, FAVICON_SVG_CONTENT } from './landing.js';
 import { swaggerDarkCss } from './swagger-theme.js';
 
-const token = process.env.META_ACCESS_TOKEN;
-if (!token) {
-  console.error('ERROR: META_ACCESS_TOKEN environment variable is required');
-  process.exit(1);
-}
+const token = process.env.META_ACCESS_TOKEN ?? '';
 
 const API_KEY = process.env.MCP_API_KEY;
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
-
-// MCP client (uses server-side token from env)
-const mcpClient = new MetaApiClient(token, {
-  accountId: process.env.META_AD_ACCOUNT_ID,
-  apiVersion: process.env.META_API_VERSION,
-});
 
 // Track active MCP sessions with TTL
 const SESSION_TTL_MS = 30 * 60 * 1000; // 30 minutes
@@ -47,9 +37,17 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000).unref();
 
-function createMcpSession(): { server: McpServer; transport: StreamableHTTPServerTransport } {
+function createMcpSession(metaToken?: string, metaAccountId?: string): { server: McpServer; transport: StreamableHTTPServerTransport } {
+  const resolvedToken = metaToken || token;
+  if (!resolvedToken) {
+    throw new Error('Missing Meta access token. Provide X-Meta-Token header or set META_ACCESS_TOKEN env var.');
+  }
+  const client = new MetaApiClient(resolvedToken, {
+    accountId: metaAccountId ?? process.env.META_AD_ACCOUNT_ID,
+    apiVersion: process.env.META_API_VERSION,
+  });
   const server = new McpServer({ name: 'meta-mcp', version: '1.0.0' });
-  registerAllTools(server, mcpClient);
+  registerAllTools(server, client);
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: () => randomUUID(),
     enableJsonResponse: false,
@@ -91,7 +89,7 @@ async function main() {
             type: 'apiKey',
             in: 'header',
             name: 'X-Meta-Token',
-            description: 'Meta/Facebook access token. Required for all /api/* routes.',
+            description: 'Meta/Facebook access token. Required for all /api/* and /mcp routes. Falls back to META_ACCESS_TOKEN env var if not provided.',
           },
         },
       },
@@ -192,7 +190,9 @@ async function main() {
         reply.hijack();
         await session.transport.handleRequest(request.raw, reply.raw, request.body);
       } else if (!sessionId) {
-        const { server, transport } = createMcpSession();
+        const metaToken = request.headers['x-meta-token'] as string | undefined;
+        const metaAccountId = request.headers['x-meta-account-id'] as string | undefined;
+        const { server, transport } = createMcpSession(metaToken, metaAccountId);
         transport.onclose = () => {
           const sid = transport.sessionId;
           if (sid) { sessions.delete(sid); console.log(`Session closed: ${sid}`); }
@@ -273,7 +273,8 @@ async function main() {
   console.log(`  Health check:  http://0.0.0.0:${PORT}/health`);
   console.log(`  API docs:      http://0.0.0.0:${PORT}/docs`);
   console.log(`  API key auth:  ${API_KEY ? 'enabled' : 'disabled'}`);
-  console.log(`  MCP account:   ${process.env.META_AD_ACCOUNT_ID ?? 'none'}`);
+  console.log(`  Meta token:    ${token ? 'from env (fallback)' : 'per-session via X-Meta-Token'}`);
+  console.log(`  MCP account:   ${process.env.META_AD_ACCOUNT_ID ?? 'none (per-session via X-Meta-Account-Id)'}`);
 }
 
 main().catch((err) => {

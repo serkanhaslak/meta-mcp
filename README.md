@@ -338,10 +338,13 @@ docker build -t meta-mcp .
 
 # Run the container
 docker run -p 3000:3000 \
+  -e MCP_API_KEY=your_api_key \
   -e META_ACCESS_TOKEN=your_token \
   -e META_AD_ACCOUNT_ID=act_123456789 \
   meta-mcp
 ```
+
+> **Note:** `META_ACCESS_TOKEN` is a fallback — callers can override it per session/request via the `X-Meta-Token` header.
 
 The server starts at `https://meta-mcp.pragmaticgrowth.com` (or `http://localhost:3000` locally) with:
 - MCP endpoint: `https://meta-mcp.pragmaticgrowth.com/mcp`
@@ -357,11 +360,12 @@ The server starts at `https://meta-mcp.pragmaticgrowth.com` (or `http://localhos
 
 Connect Claude Code directly to the remote endpoint.
 
-1. Add your server URL and API key to `.env` (gitignored, never committed):
+1. Add your secrets to `.env` (gitignored, never committed):
 
 ```bash
 META_MCP_URL=https://your-deployment-url.up.railway.app/mcp
 MCP_API_KEY=your_api_key_here
+META_ACCESS_TOKEN=your_meta_access_token_here
 ```
 
 2. Create or edit `.mcp.json` in your project root (or `~/.claude/.mcp.json` for global access):
@@ -375,14 +379,16 @@ MCP_API_KEY=your_api_key_here
         "mcp-remote",
         "${META_MCP_URL}",
         "--header",
-        "Authorization: Bearer ${MCP_API_KEY}"
+        "Authorization: Bearer ${MCP_API_KEY}",
+        "--header",
+        "X-Meta-Token: ${META_ACCESS_TOKEN}"
       ]
     }
   }
 }
 ```
 
-The `${META_MCP_URL}` and `${MCP_API_KEY}` are resolved from your `.env` file — no secrets in `.mcp.json`.
+The `${...}` variables are resolved from your `.env` file — no secrets in `.mcp.json`. The `X-Meta-Token` header provides your Meta access token per session, using the same auth model as the REST API.
 
 ### Option 2: Local Server (stdio)
 
@@ -468,7 +474,9 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
         "mcp-remote",
         "https://your-deployment-url.up.railway.app/mcp",
         "--header",
-        "Authorization: Bearer YOUR_MCP_API_KEY"
+        "Authorization: Bearer YOUR_MCP_API_KEY",
+        "--header",
+        "X-Meta-Token: YOUR_META_ACCESS_TOKEN"
       ]
     }
   }
@@ -557,12 +565,17 @@ The server also exposes a REST API for non-MCP clients (n8n, Postman, curl, cust
 
 ### Authentication
 
-All `/mcp` and `/api/*` requests require two headers:
+Both MCP and REST use the same per-caller auth model. All `/mcp` and `/api/*` requests use these headers:
 
 | Header | Purpose |
 |--------|---------|
 | `Authorization: Bearer <MCP_API_KEY>` | Server API key — gates access to all endpoints |
-| `X-Meta-Token: <META_ACCESS_TOKEN>` | Meta access token — authenticates with Meta Graph API |
+| `X-Meta-Token: <token>` | Meta access token — authenticates with Meta Graph API |
+| `X-Meta-Account-Id: <id>` | Default ad account for this session/request (optional) |
+
+For MCP, `X-Meta-Token` and `X-Meta-Account-Id` are read once at session creation (initial POST `/mcp`) and persist for the session lifetime. For REST, they are read per request.
+
+If `X-Meta-Token` is not provided, the server falls back to the `META_ACCESS_TOKEN` environment variable.
 
 ```bash
 curl -H "Authorization: Bearer YOUR_MCP_API_KEY" \
@@ -718,9 +731,9 @@ meta-mcp/
 1. Fork this repository
 2. Connect your GitHub repo to [Railway](https://railway.app)
 3. Add environment variables:
-   - `META_ACCESS_TOKEN` — Your Meta API token
-   - `META_AD_ACCOUNT_ID` — Default ad account (optional)
    - `MCP_API_KEY` — Protect the endpoint with an API key (recommended)
+   - `META_ACCESS_TOKEN` — Fallback Meta API token (optional if callers send `X-Meta-Token` header)
+   - `META_AD_ACCOUNT_ID` — Fallback default ad account (optional)
 4. Deploy — Railway will auto-detect the Dockerfile
 
 ### Docker Compose
@@ -733,9 +746,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
-      - META_AD_ACCOUNT_ID=${META_AD_ACCOUNT_ID}
       - MCP_API_KEY=${MCP_API_KEY}
+      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}  # optional fallback
+      - META_AD_ACCOUNT_ID=${META_AD_ACCOUNT_ID}  # optional fallback
       - PORT=3000
     restart: unless-stopped
 ```
@@ -744,9 +757,9 @@ services:
 
 ```bash
 # Start with env vars directly
+MCP_API_KEY=your_secret_key \
 META_ACCESS_TOKEN=your_token \
 META_AD_ACCOUNT_ID=act_123456789 \
-MCP_API_KEY=your_secret_key \
 PORT=3000 \
 node dist/index.js
 ```
@@ -757,10 +770,10 @@ node dist/index.js
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `META_ACCESS_TOKEN` | Yes | — | Meta API System User or long-lived user token |
-| `META_AD_ACCOUNT_ID` | No | — | Default ad account ID (e.g., `act_123456789`). If not set, must be passed per tool call |
-| `META_API_VERSION` | No | `v28.0` | Meta Graph API version override |
 | `MCP_API_KEY` | Recommended | — | API key for authenticating all `/mcp` and `/api/*` requests. If not set, endpoints are open |
+| `META_ACCESS_TOKEN` | No | — | Fallback Meta API token. Used when callers don't provide `X-Meta-Token` header |
+| `META_AD_ACCOUNT_ID` | No | — | Fallback default ad account ID (e.g., `act_123456789`). Overridden by `X-Meta-Account-Id` header |
+| `META_API_VERSION` | No | `v28.0` | Meta Graph API version override |
 | `PORT` | No | `3000` | Server listening port |
 | `META_MCP_URL` | No | — | Server URL for `.mcp.json` env var interpolation (e.g., `https://your-app.up.railway.app/mcp`) |
 

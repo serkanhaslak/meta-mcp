@@ -40,10 +40,23 @@ npm start            # Run compiled dist/index.js
 - Account IDs auto-prefix with `act_` if missing
 - Default API fields defined in `src/utils/default-fields.ts`
 
+## Authentication
+
+Both MCP and REST use the same per-caller auth model:
+
+| Header | Purpose |
+|--------|---------|
+| `Authorization: Bearer <key>` | Server API key (gates access to all /mcp and /api/* endpoints) |
+| `X-Meta-Token: <token>` | Per-caller Meta access token (authenticates with Graph API) |
+| `X-Meta-Account-Id: <id>` | Per-caller default ad account (optional) |
+
+For MCP, headers are read at session creation (initial POST /mcp). For REST, headers are read per request.
+If `X-Meta-Token` is not provided, falls back to `META_ACCESS_TOKEN` env var.
+
 ## Environment
 
-- `META_ACCESS_TOKEN` (required) — Meta API token
-- `META_AD_ACCOUNT_ID` (optional) — Default ad account
+- `META_ACCESS_TOKEN` (optional) — Fallback Meta API token; callers can override via `X-Meta-Token` header
+- `META_AD_ACCOUNT_ID` (optional) — Fallback default ad account; callers can override via `X-Meta-Account-Id` header
 - `META_API_VERSION` (optional) — API version override (default: v28.0)
 - `MCP_API_KEY` (recommended) — API key protecting all /mcp and /api/* endpoints
 - `PORT` (optional) — Server port (default: 3000)

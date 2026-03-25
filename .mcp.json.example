@@ -6,7 +6,9 @@
         "mcp-remote",
         "${META_MCP_URL}",
         "--header",
-        "Authorization: Bearer ${MCP_API_KEY}"
+        "Authorization: Bearer ${MCP_API_KEY}",
+        "--header",
+        "X-Meta-Token: ${META_ACCESS_TOKEN}"
       ]
     }
   }
