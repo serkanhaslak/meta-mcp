@@ -62,6 +62,28 @@ If `X-Meta-Token` is not provided, falls back to `META_ACCESS_TOKEN` env var.
 - `PORT` (optional) — Server port (default: 3000)
 - `META_MCP_URL` (optional) — Server URL for .mcp.json env var interpolation
 
+## Deployment (Railway)
+
+- **Project**: Pragmatic Growth (production)
+- **Service**: meta-mcp
+- **Domain**: `meta-mcp.pragmaticgrowth.com` (Cloudflare proxied, port 3000)
+- **Region**: us-east4 (Virginia)
+- **Builder**: Dockerfile
+- **Source**: GitHub `serkanhaslak/meta-mcp` (main branch, auto-deploy)
+- **Volume**: `meta-mcp-volume` mounted at `/data`
+- **Critical**: `PORT=3000` must be set on Railway to match the domain routing
+
+### Railway Environment Variables (production)
+
+| Variable | Value | Notes |
+|----------|-------|-------|
+| `PORT` | `3000` | Must match domain port routing |
+| `MCP_API_KEY` | (set) | Secures /mcp and /api/* endpoints |
+| `META_API_VERSION` | `v28.0` | Graph API version |
+| `META_MCP_URL` | `https://meta-mcp.pragmaticgrowth.com/mcp` | For .mcp.json interpolation |
+| `META_ACCESS_TOKEN` | (not set) | Per-session via X-Meta-Token header |
+| `META_AD_ACCOUNT_ID` | (not set) | Per-session via X-Meta-Account-Id header |
+
 ## Tool Categories (77 tools)
 
 Account (4) | Campaigns (5) | Ad Sets (5) | Ads (5) | Creatives (5) | Images (3) | Videos (4) | Audiences (6) | Saved Audiences (3) | Insights (3) | Targeting Search (4) | Targeting Utils (3) | Conversions (1) | Custom Conversions (4) | Pixels (2) | Lead Gen (2) | Rules (5) | Previews (2) | Copies (3) | Batch (1) | Labels (3) | Budget Schedules (2) | Activities (1) | Reach Estimate (1)
