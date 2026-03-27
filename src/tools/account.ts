@@ -23,11 +23,20 @@ export function registerAccountTools(server: McpServer, client: MetaApiClient): 
         ),
     },
     async ({ fields, limit }) => {
-      const result = await client.get('/me/adaccounts', {
-        fields: fields ?? DEFAULT_FIELDS.ACCOUNT_LIST,
-        limit: toOptionalNumber(limit),
-      });
-      return okResult(result);
+      try {
+        const result = await client.get('/me/adaccounts', {
+          fields: fields ?? DEFAULT_FIELDS.ACCOUNT_LIST,
+          limit: toOptionalNumber(limit),
+        });
+        return okResult(result);
+      } catch {
+        // /me endpoint fails with System User tokens — fall back to default account info
+        const actId = client.resolveAccountId();
+        const result = await client.get(`/${actId}`, {
+          fields: fields ?? DEFAULT_FIELDS.ACCOUNT_LIST,
+        });
+        return okResult({ data: [result] });
+      }
     },
   );
 
@@ -75,13 +84,25 @@ export function registerAccountTools(server: McpServer, client: MetaApiClient): 
         ),
     },
     async ({ fields, limit }) => {
-      const result = await client.get('/me/accounts', {
-        fields:
-          fields ??
-          'id,name,access_token,category,followers_count,fan_count',
-        limit: toOptionalNumber(limit),
-      });
-      return okResult(result);
+      try {
+        const result = await client.get('/me/accounts', {
+          fields:
+            fields ??
+            'id,name,access_token,category,followers_count,fan_count',
+          limit: toOptionalNumber(limit),
+        });
+        return okResult(result);
+      } catch {
+        // /me endpoint fails with System User tokens — fall back to default account's promoted pages
+        const actId = client.resolveAccountId();
+        const result = await client.get(`/${actId}/promote_pages`, {
+          fields:
+            fields ??
+            'id,name,access_token,category,followers_count,fan_count',
+          limit: toOptionalNumber(limit),
+        });
+        return okResult(result);
+      }
     },
   );
 
