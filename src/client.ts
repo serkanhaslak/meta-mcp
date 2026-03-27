@@ -33,7 +33,7 @@ export class MetaApiClient {
   constructor(token: string, options?: { accountId?: string; apiVersion?: string; minDelayMs?: number }) {
     this.token = token;
     this.defaultAccountId = options?.accountId;
-    const version = options?.apiVersion ?? 'v21.0';
+    const version = options?.apiVersion ?? 'v22.0';
     this.baseUrl = `https://graph.facebook.com/${version}`;
     this.rateLimiter = new RateLimiter(options?.minDelayMs ?? 200);
   }

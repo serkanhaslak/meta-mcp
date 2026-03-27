@@ -57,7 +57,7 @@ If `X-Meta-Token` is not provided, falls back to `META_ACCESS_TOKEN` env var.
 
 - `META_ACCESS_TOKEN` (optional) — Fallback Meta API token; callers can override via `X-Meta-Token` header
 - `META_AD_ACCOUNT_ID` (optional) — Fallback default ad account; callers can override via `X-Meta-Account-Id` header
-- `META_API_VERSION` (optional) — API version override (default: v28.0)
+- `META_API_VERSION` (optional) — API version override (default: v22.0)
 - `MCP_API_KEY` (recommended) — API key protecting all /mcp and /api/* endpoints
 - `PORT` (optional) — Server port (default: 3000)
 - `META_MCP_URL` (optional) — Server URL for .mcp.json env var interpolation
@@ -79,7 +79,7 @@ If `X-Meta-Token` is not provided, falls back to `META_ACCESS_TOKEN` env var.
 |----------|-------|-------|
 | `PORT` | `3000` | Must match domain port routing |
 | `MCP_API_KEY` | (set) | Secures /mcp and /api/* endpoints |
-| `META_API_VERSION` | `v28.0` | Graph API version |
+| `META_API_VERSION` | `v22.0` | Graph API version |
 | `META_MCP_URL` | `https://meta-mcp.pragmaticgrowth.com/mcp` | For .mcp.json interpolation |
 | `META_ACCESS_TOKEN` | (not set) | Per-session via X-Meta-Token header |
 | `META_AD_ACCOUNT_ID` | (not set) | Per-session via X-Meta-Account-Id header |
